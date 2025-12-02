@@ -1,4 +1,6 @@
-# Dokumentation der KI-Zusammenarbeit
+#Gruppe: Simon Osadnik, Sebastian Mayer, Leon Gey
+
+## Dokumentation der KI-Zusammenarbeit
 
 Wir haben die `docker-compose.yml` und die Projektstruktur interaktiv mit einer KI (Gemini) erarbeitet. Hier sind die wichtigsten Prompts und die daraus resultierenden Lösungen.
 
