@@ -68,7 +68,7 @@ Dies ermöglicht es, dass beide Dienste sauber auf Port 3000 erreichbar sind, oh
 | **Wiki** | [http://127.0.0.2:3000](http://127.0.0.2:3000) | **Wissensdatenbank (Wiki.js).** Zentrale Ablage für IT-Dokumentation, Anleitungen und Onboarding-Infos. |
 | **Grafana** | [http://127.0.0.3:3000](http://127.0.0.3:3000) | **Monitoring-Dashboard.** Visualisierung von Systemdaten und Metriken (z.B. Serverauslastung, Uptime). |
 
-##Screenshots
+## Screenshots
 
 ### Nachweis das alle Container gestartet sind
 
@@ -81,3 +81,13 @@ Dies ermöglicht es, dass beide Dienste sauber auf Port 3000 erreichbar sind, oh
 ### Nachweis Weboberfläche Grafana
 
 ![GrafanaStartNachweis](./doc/Wiki.png)
+
+## DockerContainer Starten
+
+| Befehl | Wirkung |
+| :--- | :--- |
+| `docker compose up -d` | **Alles starten.** Fährt die gesamte Umgebung im Hintergrund hoch. |
+| `docker compose up -d wiki` | **Nur Wiki starten/updaten.** Startet gezielt nur den Wiki-Service (oder wendet Config-Änderungen an). |
+| `docker compose stop grafana` | **Nur Grafana anhalten.** Stoppt den Container, ohne ihn zu löschen. |
+| `docker compose restart db` | **Datenbank neu starten.** Nützlich, falls die Verbindung mal hängt. |
+| `docker compose logs -f wordpress` | **Live-Logs ansehen.** Zeigt die Ausgaben von WordPress in Echtzeit (Beenden mit `Strg + C`). |
