@@ -1,5 +1,9 @@
+name: wordpress-wiki-stack
+
 services:
+  # ----------------------------------------
   # 1. MariaDB Datenbank Service
+  # ----------------------------------------
   db:
     image: mariadb:lts
     container_name: wp-int-db
@@ -19,7 +23,9 @@ services:
       timeout: 5s
       retries: 3
 
+  # ----------------------------------------
   # 2. WordPress Service
+  # ----------------------------------------
   wordpress:
     image: wordpress:latest
     container_name: wp-int-app
@@ -39,7 +45,9 @@ services:
     networks:
       - wp-network
 
+  # ----------------------------------------
   # 3. phpMyAdmin Service
+  # ----------------------------------------
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: wp-int-pma
@@ -55,7 +63,9 @@ services:
     networks:
       - wp-network
 
-  # 4. Internes Wiki
+  # ----------------------------------------
+  # 4. Internes Wiki (Wiki.js)
+  # ----------------------------------------
   wiki:
     image: ghcr.io/requarks/wiki:2
     container_name: wp-int-wiki
@@ -63,28 +73,31 @@ services:
     environment:
       DB_TYPE: sqlite
     ports:
-      # Syntax: "IP-ADRESSE : HOST-PORT : CONTAINER-PORT"
-      # Wir binden explizit an die Loopback-Adresse 127.0.0.2
+      # Trick: Nutzung von Loopback-IPs um Port 3000 mehrfach zu belegen
       - "127.0.0.2:3000:3000"
     volumes:
       - wiki_data:/wiki/data
     networks:
       - wp-network
 
-  # 5. Monitoring System 
+  # ----------------------------------------
+  # 5. Monitoring System (Grafana)
+  # ----------------------------------------
   grafana:
-    image: grafana/grafana:main
+    image: grafana/grafana:latest
     container_name: wp-int-grafana
     restart: unless-stopped
     ports:
-      # Wir binden explizit an die Loopback-Adresse 127.0.0.3
-      # Somit nutzen beide Port 3000, aber auf unterschiedlichen IPs!
+      # Trick: Nutzung einer weiteren Loopback-IP für Port 3000
       - "127.0.0.3:3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
     networks:
       - wp-network
 
+# ----------------------------------------
+# Volumes & Networks
+# ----------------------------------------
 volumes:
   db_data:
   wiki_data:
