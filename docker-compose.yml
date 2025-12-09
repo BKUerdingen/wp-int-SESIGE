@@ -1,9 +1,5 @@
-name: wordpress-wiki-stack
-
 services:
-  # ----------------------------------------
-  # 1. MariaDB Datenbank Service
-  # ----------------------------------------
+  # 1. MariaDB für WordPress
   db:
     image: mariadb:lts
     container_name: wp-int-db
@@ -23,9 +19,7 @@ services:
       timeout: 5s
       retries: 3
 
-  # ----------------------------------------
   # 2. WordPress Service
-  # ----------------------------------------
   wordpress:
     image: wordpress:latest
     container_name: wp-int-app
@@ -45,9 +39,7 @@ services:
     networks:
       - wp-network
 
-  # ----------------------------------------
   # 3. phpMyAdmin Service
-  # ----------------------------------------
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: wp-int-pma
@@ -63,9 +55,7 @@ services:
     networks:
       - wp-network
 
-  # ----------------------------------------
-  # 4. Internes Wiki (Wiki.js)
-  # ----------------------------------------
+  # 4. Internes Wiki
   wiki:
     image: ghcr.io/requarks/wiki:2
     container_name: wp-int-wiki
@@ -73,35 +63,73 @@ services:
     environment:
       DB_TYPE: sqlite
     ports:
-      # Trick: Nutzung von Loopback-IPs um Port 3000 mehrfach zu belegen
-      - "127.0.0.2:3000:3000"
+      - "${WIKI_PORT}:3000"
     volumes:
       - wiki_data:/wiki/data
     networks:
       - wp-network
 
-  # ----------------------------------------
   # 5. Monitoring System (Grafana)
-  # ----------------------------------------
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:main
     container_name: wp-int-grafana
     restart: unless-stopped
     ports:
-      # Trick: Nutzung einer weiteren Loopback-IP für Port 3000
-      - "127.0.0.3:3000:3000"
+      - "${GRAFANA_PORT}:3000"
     volumes:
       - grafana_data:/var/lib/grafana
     networks:
       - wp-network
 
-# ----------------------------------------
-# Volumes & Networks
-# ----------------------------------------
+  # ----------------------------------------
+  # HIER BEGINNT DER NEUE TEIL
+  # ----------------------------------------
+  
+  # 6. MariaDB für Nginx Proxy Manager
+  npm-db:
+    image: mariadb:lts
+    container_name: wp-int-npm-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} 
+      MYSQL_DATABASE: ${NPM_DB_NAME}
+      MYSQL_USER: ${NPM_DB_USER}
+      MYSQL_PASSWORD: ${NPM_DB_PASSWORD}
+    volumes:
+      - npm_db_data:/var/lib/mysql
+    networks:
+      - wp-network
+
+  # 7. Nginx Proxy Manager (NPM)
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: wp-int-npm
+    restart: unless-stopped
+    depends_on:
+      - npm-db
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    environment:
+      DB_MYSQL_HOST: "npm-db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: ${NPM_DB_USER}
+      DB_MYSQL_PASSWORD: ${NPM_DB_PASSWORD}
+      DB_MYSQL_NAME: ${NPM_DB_NAME}
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - wp-network
+
 volumes:
   db_data:
   wiki_data:
   grafana_data:
+  npm_data:
+  npm_letsencrypt:
+  npm_db_data:
 
 networks:
   wp-network:
