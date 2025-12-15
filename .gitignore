@@ -5,9 +5,17 @@
 
 # Docker Environments
 .env
+*.pem
 
 # WordPress Core (wir wollen nur wp-content versionieren, nicht den Core)
 # Da wir aber wp-content via Bind-Mount nutzen, ignorieren wir den Inhalt von uploads,
 # behalten aber plugins und themes (wenn ihr eigene entwickelt).
 wordpress/wp-content/uploads/*
 !wordpress/wp-content/uploads/.gitkeep
+
+# Proxy Daten ignorieren, aber Ordnerstruktur behalten
+proxy/data/*
+!proxy/data/.gitkeep
+
+proxy/letsencrypt/*
+!proxy/letsencrypt/.gitkeep
