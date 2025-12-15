@@ -88,7 +88,7 @@ Der Browser fordert **vor** dem Laden der Seite Benutzername und Passwort.
 ### 5. Zertifikat Erstellung und Hinterlegung
 Erstellung des Zertifikates in der Git Bash mit dem Befehl:
 ```bash
-openssl req -nodes -new -x509 -keyout key.pem -out cert.pem -days 3650 -subj "/CN=*.localhost"`
+openssl req -nodes -new -x509 -keyout key.pem -out cert.pem -days 3650 -subj "/CN=*.localhost"```
 
 ---
 
@@ -104,7 +104,7 @@ Da die Proxy-Daten persistent in lokalen Ordnern gespeichert werden, müssen die
 ```powershell
 mkdir proxy
 mkdir proxy/data
-mkdir proxy/letsencrypt
+mkdir proxy/letsencrypt```
 
 #### Host-Datei anpassen (windows)
 Damit Adressen wie `wp.localhost` auf deinen eigenen PC zeigen, muss die Windows-Hosts-Datei editiert werden.
